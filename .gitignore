@@ -1,0 +1,6 @@
+# Env files
+.env*
+!.env.example
+
+# IDE files
+.vscode
