@@ -47,7 +47,7 @@ func NewSQLiteStorage(dbPath string) (*SQLiteStorage, error) {
 	return &SQLiteStorage{db: db}, nil
 }
 
-func (s *SQLiteStorage) SaveEvent(ctx context.Context, event models.DecodedEvent) error {
+func (s *SQLiteStorage) SaveEvent(ctx context.Context, event *models.DecodedEvent) error {
 	dataJSON, _ := json.Marshal(event.Data)
 	_, err := s.db.ExecContext(ctx, 
 		`INSERT INTO events (contract_address, event_name, block_number, tx_hash, data)

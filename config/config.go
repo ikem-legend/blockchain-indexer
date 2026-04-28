@@ -43,4 +43,3 @@ func getEnvOrDefault(key, defaultValue string) string {
     fmt.Printf("%s: %s\n", key, defaultValue)
     return defaultValue
 }
-

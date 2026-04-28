@@ -36,7 +36,7 @@ func (s *Server) SetupRoutes() {
 func homeHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	if err := json.NewEncoder(w).Encode(map[string]string{"message": "Block indexer server"}); err != nil {
+	if err := json.NewEncoder(w).Encode(map[string]string{"message": "Blockchain indexer server"}); err != nil {
 		log.Printf("failed to write home response: %v", err)
 	}
 }
