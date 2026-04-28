@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"strings"
+	"time"
 
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/common"
@@ -78,7 +79,10 @@ func (d *EventDecoder) Decode(rawLog *models.RawLog) (*models.DecodedEvent, erro
 		topicBytes := common.HexToHash(topicData).Bytes()
 
 		// Unpack the value according to its ABI type
-		tempArgs := abi.Arguments{arg}
+		// Since the topic bytes are already the raw value, the indexed arguments are flipped to false,
+		argCopy := arg
+		argCopy.Indexed = false
+		tempArgs := abi.Arguments{argCopy}
 
 		values, err := tempArgs.Unpack(topicBytes)
 		if err != nil {
@@ -112,5 +116,6 @@ func (d *EventDecoder) Decode(rawLog *models.RawLog) (*models.DecodedEvent, erro
 		BlockNumber: rawLog.BlockNumber,
 		TxHash: rawLog.TxHash,
 		Data: decodedData,
+		Timestamp: time.Now(),
 	}, nil
 }

@@ -50,9 +50,9 @@ func NewSQLiteStorage(dbPath string) (*SQLiteStorage, error) {
 func (s *SQLiteStorage) SaveEvent(ctx context.Context, event *models.DecodedEvent) error {
 	dataJSON, _ := json.Marshal(event.Data)
 	_, err := s.db.ExecContext(ctx, 
-		`INSERT INTO events (contract_address, event_name, block_number, tx_hash, data)
-		VALUES(?, ?, ?, ?, ?)`,
-		event.ContractAddr, event.EventName, event.BlockNumber, event.TxHash, string(dataJSON),
+		`INSERT INTO events (contract_address, event_name, block_number, tx_hash, data, timestamp)
+		VALUES(?, ?, ?, ?, ?, ?)`,
+		event.ContractAddr, event.EventName, event.BlockNumber, event.TxHash, string(dataJSON), event.Timestamp,
 	)
 	return err
 }
@@ -65,17 +65,20 @@ func (s *SQLiteStorage) GetEvents(ctx context.Context, limit int) ([]*models.Dec
 		log.Fatal(err)
 		return nil, err
 	}
+	defer rows.Close()
 
 	var events []*models.DecodedEvent
 	for rows.Next() {
 		var event models.DecodedEvent
 		var dataJSON string
-		err := rows.Scan(&event.ContractAddr, &event.EventName, &event.BlockNumber, &event.TxHash, &dataJSON)
+		err := rows.Scan(&event.ID, &event.ContractAddr, &event.EventName, &event.BlockNumber, &event.TxHash, &dataJSON, &event.Timestamp)
 		if err != nil {
 			log.Fatal(err)
 		}
-		json.Unmarshal([]byte(dataJSON), &event.Data)
-		log.Printf("Event: %s, Data: %s", event.EventName, dataJSON)
+		marshallErr := json.Unmarshal([]byte(dataJSON), &event.Data)
+		if marshallErr != nil {
+			log.Println("Error marshalling JSON")
+		}
 		events = append(events, &event)
 	}
 	
