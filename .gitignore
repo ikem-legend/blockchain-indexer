@@ -4,3 +4,6 @@
 
 # IDE files
 .vscode
+
+# DB files
+*.db
